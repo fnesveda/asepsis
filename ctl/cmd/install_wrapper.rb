@@ -23,6 +23,7 @@ def cmd_install_wrapper(options)
       sys("sudo cp -a \"#{DS_LIB_FOLDER}\" \"#{temp_folder}\"")
       temp_lib = "#{temp_folder}/A/DesktopServicesPriv"
       sys("sudo \"#{RESOURCES_PATH}/install_name_tool\" -id \"#{temp_lib}\" \"#{temp_lib}\"")
+      sys("sudo \"#{CODESIGN_PATH}\" --deep --file-list - --timestamp=none --force --sign - \"#{temp_lib}\"")
 
       sys("codesign --verify \"#{temp_lib}\"")
       sys("codesign --verify \"#{temp_folder}/A\"")
@@ -32,7 +33,7 @@ def cmd_install_wrapper(options)
       sys("sudo cp -a \"#{DS_LIB_FOLDER}\" \"#{temp_folder}\"")
       temp_lib = "#{temp_folder}/A/DesktopServicesPriv"
       sys("sudo cp \"#{DS_WRAPPER_SOURCE_PATH}\" \"#{temp_lib}\"")
-      sys("sudo \"#{CODESIGN_PATH}\" --file-list - --timestamp=none --force --sign - \"#{temp_folder}/A\"")
+      sys("sudo \"#{CODESIGN_PATH}\" --deep --file-list - --timestamp=none --force --sign - \"#{temp_folder}/A\"")
 
       sys("codesign --verify \"#{temp_lib}\"")
       sys("codesign --verify \"#{temp_folder}/A\"")
@@ -75,7 +76,7 @@ def cmd_install_wrapper(options)
     relocated_lib = "#{DS_LIB_RELOCATED_FOLDER}/DesktopServicesPriv"
     sys("sudo \"#{RESOURCES_PATH}/install_name_tool\" -id \"#{relocated_lib}\" \"#{relocated_lib}\"")
     # apply code signatures only under Mavericks and higher
-    sys("sudo \"#{CODESIGN_PATH}\" --file-list - --timestamp=none --force --sign - \"#{relocated_lib}\"") unless lions?
+    sys("sudo \"#{CODESIGN_PATH}\" --deep --file-list - --timestamp=none --force --sign - \"#{relocated_lib}\"") unless lions?
 
     # sanity checks & dry run should have prevented failure here
     sys("codesign --verify \"#{relocated_lib}\"") unless lions?
@@ -84,7 +85,7 @@ def cmd_install_wrapper(options)
     wrapper_lib = "#{DS_LIB_FOLDER}/DesktopServicesPriv"
     sys("sudo cp \"#{DS_WRAPPER_SOURCE_PATH}\" \"#{wrapper_lib}\"")
     # since 10.9.3 it is important to codesing in-place after copying the file, see https://github.com/binaryage/asepsis/issues/13
-    sys("sudo \"#{CODESIGN_PATH}\" --file-list - --timestamp=none --force --sign - \"#{DS_LIB_FOLDER}\"") unless lions?
+    sys("sudo \"#{CODESIGN_PATH}\" --deep --file-list - --timestamp=none --force --sign - \"#{DS_LIB_FOLDER}\"") unless lions?
     
     # sanity checks & dry run should have prevented failure here
     # a failure here could be fatal
