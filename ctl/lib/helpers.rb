@@ -106,8 +106,8 @@ end
 def os_version_check()
   return true if File.exists?(File.expand_path("~/.no-asepsis-os-restriction"))
   
-  `sw_vers -productVersion|grep '10\\.\\(8\\|9\\|10\\)'`
-  die("Asepsis #{ASEPSISCTL_VERSION} can be only installed under OS X versions 10.8, 10.9 and 10.10\nCheck out http://asepsis.binaryage.com for updated version.") if $?!=0
+  `sw_vers -productVersion|grep '10\\.\\(8\\|9\\|10\\|11\\|12\\|13\\|14\\)'`
+  die("Asepsis #{ASEPSISCTL_VERSION} can be only installed under OS X versions 10.8, 10.9, 10.10, 10.11, 10.12, 10.13 and 10.14.\nCheck out http://asepsis.binaryage.com for updated version.") if $?!=0
 end
 
 def prior_yosemite?
