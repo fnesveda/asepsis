@@ -7,27 +7,15 @@ RELEASE_DIR = File.join(ROOT_DIR, 'releases')
 
 INSTALL_DIR = "/Library/Application Support/Asepsis"
 
-
-
-################################################################################################
-# dependencies
-
-require 'rubygems'
-begin
-    require 'colored'
-rescue LoadError
-    raise 'You must "gem install colored" to use terminal colors'
-end
-
 ############################################################################################
 
 def die(msg, status=1)
-  puts "Error[#{status||$?}]: #{msg}".red
+  puts "Error[#{status||$?}]: #{msg}"
   exit status||$?
 end
 
 def announce(cmd)
-    puts "> " + cmd.yellow
+    puts "> " + cmd
 end
 
 def sys(cmd)
