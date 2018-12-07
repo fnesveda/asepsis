@@ -12,16 +12,6 @@ def cmd_install_wrapper(options)
         die("wrapper framework seems to be installed (#{ds_lib} was created by Asepsis), to reinstall please run: \"asepsisctl uninstall_wrapper\" first")
     end
 
-    # check that original library has both slices (https://github.com/binaryage/asepsis/issues/25)
-    unless is_library_fat_with_both_slices? ds_lib then
-        die("the original library is expected to be a fat binary. (#{ds_lib} should contain both slices x86_64 and i386)")
-    end
-
-    # check that wrapper library has both slices (https://github.com/binaryage/asepsis/issues/25)
-    unless is_library_fat_with_both_slices? DS_WRAPPER_SOURCE_PATH then
-        die("the wrapper library is expected to be a fat binary. (#{DS_WRAPPER_SOURCE_PATH} should contain both slices x86_64 and i386)")
-    end
-    
     unless lions?
       # dry run codesign in a temp folder to test its proper function
       # see https://github.com/binaryage/asepsis/issues/25
@@ -33,11 +23,6 @@ def cmd_install_wrapper(options)
       sys("sudo cp -a \"#{DS_LIB_FOLDER}\" \"#{temp_folder}\"")
       temp_lib = "#{temp_folder}/A/DesktopServicesPriv"
       sys("sudo \"#{RESOURCES_PATH}/install_name_tool\" -id \"#{temp_lib}\" \"#{temp_lib}\"")
-      sys("sudo \"#{CODESIGN_PATH}\" --file-list - --timestamp=none --force --sign - \"#{temp_lib}\"")
-
-      unless is_library_fat_with_both_slices? temp_lib then
-          die("the original library is expected to be a fat binary after codesign. (#{temp_lib} should contain both slices x86_64 and i386)")
-      end
 
       sys("codesign --verify \"#{temp_lib}\"")
       sys("codesign --verify \"#{temp_folder}/A\"")
@@ -49,10 +34,6 @@ def cmd_install_wrapper(options)
       sys("sudo cp \"#{DS_WRAPPER_SOURCE_PATH}\" \"#{temp_lib}\"")
       sys("sudo \"#{CODESIGN_PATH}\" --file-list - --timestamp=none --force --sign - \"#{temp_folder}/A\"")
 
-      unless is_library_fat_with_both_slices? temp_lib then
-          die("the wrapper library is expected to be a fat binary after codesign. (#{temp_lib} should contain both slices x86_64 and i386)")
-      end
-      
       sys("codesign --verify \"#{temp_lib}\"")
       sys("codesign --verify \"#{temp_folder}/A\"")
 
@@ -97,9 +78,6 @@ def cmd_install_wrapper(options)
     sys("sudo \"#{CODESIGN_PATH}\" --file-list - --timestamp=none --force --sign - \"#{relocated_lib}\"") unless lions?
 
     # sanity checks & dry run should have prevented failure here
-    unless is_library_fat_with_both_slices? relocated_lib then
-        die("PANIC: the original relocated library is expected to be a fat binary after codesign. (#{relocated_lib} should contain both slices x86_64 and i386)")
-    end
     sys("codesign --verify \"#{relocated_lib}\"") unless lions?
     sys("codesign --verify \"#{DS_LIB_RELOCATED_FOLDER}\"") unless lions?
 
@@ -110,9 +88,6 @@ def cmd_install_wrapper(options)
     
     # sanity checks & dry run should have prevented failure here
     # a failure here could be fatal
-    unless is_library_fat_with_both_slices? wrapper_lib then
-        die("PANIC: the final wrapper library is expected to be a fat binary after codesign. (#{wrapper_lib} should contain both slices x86_64 and i386)")
-    end
     sys("codesign --verify \"#{wrapper_lib}\"") unless lions?
     sys("codesign --verify \"#{DS_LIB_FOLDER}\"") unless lions?
 end
